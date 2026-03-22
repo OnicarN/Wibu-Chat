@@ -1,25 +1,15 @@
 package com.example.wibuchat100;
 
 public class HelperClass {
-    private String email;
     private String username;
+    private String email;
+
     private String password;
 
-    public HelperClass(String email, String username, String password) {
-        this.email = email;
+    public HelperClass(String username, String email, String password) {
         this.username = username;
-        this.password = password;
-    }
-
-    public HelperClass() {
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
         this.email = email;
+        this.password = password;
     }
 
     public String getUsername() {
@@ -28,6 +18,14 @@ public class HelperClass {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {

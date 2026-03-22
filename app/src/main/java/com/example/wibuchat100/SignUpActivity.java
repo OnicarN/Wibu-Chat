@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,7 +23,7 @@ public class SignUpActivity extends AppCompatActivity {
     EditText username,email,password;
     Button btnSignUp;
 
-
+    TextView txtLogin;
 
     //Declaro las variables para la parte del firebase
     FirebaseDatabase firebaseDatabase;
@@ -50,6 +51,7 @@ public class SignUpActivity extends AppCompatActivity {
         email = findViewById(R.id.SignEmail);
         password = findViewById(R.id.SignPassword);
         btnSignUp = findViewById(R.id.signup_button);
+        txtLogin = findViewById(R.id.signRedirectTet);
 
         //Inicializo la parte de la base de datos
         btnSignUp.setOnClickListener(new View.OnClickListener() {
@@ -71,6 +73,13 @@ public class SignUpActivity extends AppCompatActivity {
                 }
 
 
+            }
+        });
+        txtLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SignUpActivity.this,LoginActivity.class);
+                startActivity(intent);
             }
         });
     }
