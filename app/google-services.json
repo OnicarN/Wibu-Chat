@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "156766845853",
+    "firebase_url": "https://wibu-chat-db-default-rtdb.firebaseio.com",
+    "project_id": "wibu-chat-db",
+    "storage_bucket": "wibu-chat-db.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156766845853:android:3b0eb9dcc309edf0d10d74",
+        "android_client_info": {
+          "package_name": "com.example.wibuchat100"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOp2v-FVzFiKFKDZ1IluU50JR4HHi0rBE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156766845853:android:e79c75c467db6628d10d74",
+        "android_client_info": {
+          "package_name": "com.polancodev.wibuchat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOp2v-FVzFiKFKDZ1IluU50JR4HHi0rBE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
