@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,20 +14,18 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class SignUpActivity extends AppCompatActivity {
 
-
-    //Zona en la que voy a ir declarando mis variables
-    EditText username,email,password;
+    EditText username, email, password;
     Button btnSignUp;
-
     TextView txtLogin;
 
-    //Declaro las variables para la parte del firebase
-    FirebaseDatabase firebaseDatabase;
+    FirebaseAuth mAuth;
     DatabaseReference databaseReference;
 
     @Override
@@ -40,47 +39,67 @@ public class SignUpActivity extends AppCompatActivity {
             return insets;
         });
 
-        //Llamo a la función para cargar componentes
-        cargarComoponentesSignup();
+        cargarComponentesSignup();
     }
 
-    //Función para cargar los componentes
-    public void cargarComoponentesSignup(){
-        HelperClass helperClass;
+    public void cargarComponentesSignup() {
         username = findViewById(R.id.SignUsername);
-        email = findViewById(R.id.SignEmail);
+        email    = findViewById(R.id.SignEmail);
         password = findViewById(R.id.SignPassword);
         btnSignUp = findViewById(R.id.signup_button);
-        txtLogin = findViewById(R.id.signRedirectTet);
+        txtLogin  = findViewById(R.id.signRedirectTet);
 
-        //Inicializo la parte de la base de datos
+        // Inicializo FirebaseAuth
+        mAuth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference("users");
+
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                HelperClass helperClass;
-                firebaseDatabase = FirebaseDatabase.getInstance();
-                databaseReference = firebaseDatabase.getReference("users");
-
-                String name = username.getText().toString();
-                String mail = email.getText().toString();
-                String passwd = password.getText().toString();
-
-                if (!name.isEmpty() && !mail.isEmpty() && !passwd.isEmpty()){
-                    helperClass = new HelperClass(name,mail,passwd);
-                    databaseReference.child(name).setValue(helperClass);
-                    Intent intent = new Intent(SignUpActivity.this,LoginActivity.class);
-                    startActivity(intent);
-                }
-
-
+                registrarUsuario();
             }
         });
+
         txtLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SignUpActivity.this,LoginActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
             }
         });
+    }
+
+    private void registrarUsuario() {
+        String name   = username.getText().toString().trim();
+        String mail   = email.getText().toString().trim();
+        String passwd = password.getText().toString().trim();
+
+        if (name.isEmpty()) { username.setError("Introduce un nombre de usuario"); return; }
+        if (mail.isEmpty())  { email.setError("Introduce un email"); return; }
+        if (passwd.isEmpty()) { password.setError("Introduce una contraseña"); return; }
+
+        // 1) Crear usuario en Firebase Authentication
+        mAuth.createUserWithEmailAndPassword(mail, passwd)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        String uid = mAuth.getCurrentUser().getUid();
+
+                        // 2) Guardar el displayName en Auth (opcional)
+                        UserProfileChangeRequest profile = new UserProfileChangeRequest.Builder()
+                                .setDisplayName(name)
+                                .build();
+                        mAuth.getCurrentUser().updateProfile(profile);
+
+                        // 3) Guardar el perfil público en Realtime Database
+                        HelperClass helperClass = new HelperClass(uid, name, mail);
+                        databaseReference.child(uid).setValue(helperClass);
+
+                        Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
+                        finish();
+                    } else {
+                        Toast.makeText(this, "Error: " + task.getException().getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 }

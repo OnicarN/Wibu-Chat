@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,10 +25,13 @@ import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText editUsername,editPassword;
+    EditText editUsername, editPassword;
     TextView redirectSign;
-
     Button btnMain;
+
+    FirebaseAuth mAuth;
+    DatabaseReference databaseReference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,102 +43,74 @@ public class LoginActivity extends AppCompatActivity {
             return insets;
         });
 
-        //Llamo a la función para cargar los componentes
         cargarComponentesLogin();
-        btnMain.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                realizarLogin();
-            }
-        });
     }
 
-    public void cargarComponentesLogin(){
+    public void cargarComponentesLogin() {
         editUsername = findViewById(R.id.LoginUsername);
         editPassword = findViewById(R.id.LoginPassword);
         redirectSign = findViewById(R.id.loginRedirectTet);
-        btnMain = findViewById(R.id.login_button);
+        btnMain      = findViewById(R.id.login_button);
+
+        mAuth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference("users");
+
+        btnMain.setOnClickListener(v -> realizarLogin());
+
+        redirectSign.setOnClickListener(v ->
+                startActivity(new Intent(LoginActivity.this, SignUpActivity.class))
+        );
     }
 
-    public boolean validarCredenciales(String username,String password){
-        boolean res;
-        int contadorBuenos = 0;
+    public void realizarLogin() {
+        String username = editUsername.getText().toString().trim();
+        String password = editPassword.getText().toString().trim();
 
-        if (username.isEmpty()){
-            editUsername.setError("Falta por introducir el nombre de usuario para poder hacer login");
-        }else{
-            contadorBuenos++;
-        }
+        if (username.isEmpty()) { editUsername.setError("Introduce tu nombre de usuario"); return; }
+        if (password.isEmpty()) { editPassword.setError("Introduce tu contraseña"); return; }
 
-        if (password.isEmpty()){
-            editPassword.setError("Falta por introducir la contraseña para poder hacer login");
-        }else{
-            contadorBuenos++;
-        }
-
-        if (contadorBuenos == 2){
-            res = true;
-        }else{
-            res = false;
-        }
-        return res;
-    }
-
-    public void realizarLogin(){
-        String username = editUsername.getText().toString();
-        String password = editPassword.getText().toString();
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);;
-
-
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users");
-        Query checkUserDatabase = databaseReference.orderByChild("username").equalTo(username);
-
-        if (validarCredenciales(username, password)) {
-
-        }
-        //Esto se hace para que firebase vaya buscando la info
-        checkUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+        // Busco el email en Realtime Database a partir del username
+        Query query = databaseReference.orderByChild("username").equalTo(username);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                if (validarCredenciales(username,password)){
-                    int casosBuenos = 0;
-                    //Snapshot es como la foto con los datos
-                    if (snapshot.exists()) {
-                        editUsername.setError(null);
-                        String passwd = snapshot.child(username).child("password").getValue(String.class);
-                        casosBuenos++;
-                        if (passwd.equals(password)) {
-                            editPassword.setError(null);
-                            casosBuenos++;
-                        } else {
-                            editPassword.setError("Contraseña incorrecta, vuelve a intentarlo");
-                            editPassword.requestFocus();
-
-                        }
-
-                        if (casosBuenos == 2){
-                            startActivity(intent);
-                        }
-                    } else {
-                        editUsername.setError("Usuario no existe");
-                        editUsername.requestFocus();
-                    }
+                if (!snapshot.exists()) {
+                    editUsername.setError("Usuario no encontrado");
+                    editUsername.requestFocus();
+                    return;
                 }
+
+                // Obtengo el email del primer resultado
+                String email = null;
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    email = child.child("email").getValue(String.class);
+                    break;
+                }
+
+                if (email == null) {
+                    Toast.makeText(LoginActivity.this, "Error al obtener datos del usuario",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Ahora hago login con Firebase Authentication
+                final String emailFinal = email;
+                mAuth.signInWithEmailAndPassword(emailFinal, password)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                finish();
+                            } else {
+                                editPassword.setError("Contraseña incorrecta");
+                                editPassword.requestFocus();
+                            }
+                        });
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(LoginActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
             }
         });
-        redirectSign.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
-                startActivity(intent);
-            }
-        });
-
     }
 }
