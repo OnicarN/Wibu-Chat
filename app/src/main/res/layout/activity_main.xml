@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/imagen_login"
-    tools:context=".MainActivity"
-    tools:ignore="Orientation"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/imagen_login">
 
-    <SearchView
-        android:id="@+id/buscador"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"/>
+        android:background="@color/purple"
+        app:tabTextColor="#AAAAAA"
+        app:tabSelectedTextColor="#FFFFFF"
+        app:tabIndicatorColor="#FFFFFF"
+        app:tabIndicatorHeight="3dp"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/lista_contactos"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

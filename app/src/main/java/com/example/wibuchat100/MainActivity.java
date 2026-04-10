@@ -1,37 +1,32 @@
 package com.example.wibuchat100;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.widget.SearchView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class MainActivity extends AppCompatActivity {
 
+    TabLayout tabLayout;
+    ViewPager2 viewPager;
 
-    //Parte en la que declaro las variables
-    RecyclerView recyclerView;
-    DatabaseReference db;
-    List<Contacto> contactos;
-
-    SearchView searchview;
-
-    ContactoAdapter contactoAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,84 +38,55 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        //Cargando los componentes
-        cargarComponentes();
-        rellenarRecycler();
+        checkNotificationPermission();
+        actualizarTokenFCM();
 
-        /**
-         * Esta parte del código lo que hace es que mientras escribes algo
-         * en el search view, inmediatamente después lo que va a suceder es
-         * que se van a cargar aquellos usuarios que existan con ese "username"
-         */
-        searchview.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                db.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        contactos.clear();
+        tabLayout  = findViewById(R.id.tabLayout);
+        viewPager  = findViewById(R.id.viewPager);
 
-                        for (DataSnapshot hija: snapshot.getChildren()){
-                            HelperClass usuario = hija.getValue(HelperClass.class);
-                            Contacto contacto = new Contacto();
-                            contacto.setNombre(usuario.getUsername());
-                            contacto.setEmail(usuario.getEmail());
+        // Adaptador con los 3 fragments
+        MainPagerAdapter adapter = new MainPagerAdapter(this);
+        viewPager.setAdapter(adapter);
 
-                            if (contacto.getNombre().contains(newText)){
-                                contactos.add(contacto);
-                            }
-                        }
-                        contactoAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-                return false;
+        // Une tabs con viewpager
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            switch (position) {
+                case 0: tab.setText("Amigos");  break;
+                case 1: tab.setText("Buscar");  break;
+                case 2: tab.setText("Perfil");  break;
             }
+        }).attach();
+    }
 
-            @Override
-            public boolean onQueryTextSubmit(String query) {
+    private void checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+            }
+        }
+    }
 
-                return false;
+    private void actualizarTokenFCM() {
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) return;
+            String token = task.getResult();
+            String uid = FirebaseAuth.getInstance().getUid();
+            if (uid != null) {
+                FirebaseDatabase.getInstance().getReference("users")
+                        .child(uid).child("fcmToken").setValue(token);
             }
         });
     }
 
-    public void cargarComponentes(){
-        recyclerView = findViewById(R.id.lista_contactos);
-        contactos = new ArrayList<>();
-        contactoAdapter = new ContactoAdapter(contactos);
-        db = FirebaseDatabase.getInstance().getReference("users");
-        searchview = findViewById(R.id.buscador);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(contactoAdapter);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 101 && grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "Notificaciones activadas", Toast.LENGTH_SHORT).show();
+        }
     }
-
-    public void rellenarRecycler(){
-        db.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                contactos.clear();
-
-                for (DataSnapshot hija: snapshot.getChildren()){
-                    HelperClass usuario = hija.getValue(HelperClass.class);
-                    Contacto contacto = new Contacto();
-                    contacto.setNombre(usuario.getUsername());
-                    contacto.setEmail(usuario.getEmail());
-                    contactos.add(contacto);
-                }
-                contactoAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
 }

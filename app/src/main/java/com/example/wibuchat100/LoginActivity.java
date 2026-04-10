@@ -49,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         editUsername = findViewById(R.id.LoginUsername);
         editPassword = findViewById(R.id.LoginPassword);
         redirectSign = findViewById(R.id.loginRedirectTet);
-        btnMain      = findViewById(R.id.login_button);
+        btnMain = findViewById(R.id.login_button);
 
         mAuth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference("users");
@@ -65,8 +65,14 @@ public class LoginActivity extends AppCompatActivity {
         String username = editUsername.getText().toString().trim();
         String password = editPassword.getText().toString().trim();
 
-        if (username.isEmpty()) { editUsername.setError("Introduce tu nombre de usuario"); return; }
-        if (password.isEmpty()) { editPassword.setError("Introduce tu contraseña"); return; }
+        if (username.isEmpty()) {
+            editUsername.setError("Introduce tu nombre de usuario");
+            return;
+        }
+        if (password.isEmpty()) {
+            editPassword.setError("Introduce tu contraseña");
+            return;
+        }
 
         // Busco el email en Realtime Database a partir del username
         Query query = databaseReference.orderByChild("username").equalTo(username);
@@ -97,8 +103,22 @@ public class LoginActivity extends AppCompatActivity {
                 mAuth.signInWithEmailAndPassword(emailFinal, password)
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
-                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                                finish();
+                                String uidActual = mAuth.getCurrentUser().getUid();
+                                com.google.firebase.messaging.FirebaseMessaging.getInstance().getToken()
+                                        .addOnCompleteListener(tokenTask -> {
+                                            if (tokenTask.isSuccessful()) {
+                                                String token = tokenTask.getResult();
+
+                                                // 3. Lo guardamos en la carpeta del usuario en "users/UID/fcmtoken"
+                                                databaseReference.child(uidActual).child("fcmToken").setValue(token);
+                                            }
+
+                                            // 4. IMPORTANTE: El cambio de pantalla va AQUÍ ADENTRO,
+                                            // para asegurar que intentamos guardar el token antes de irnos.
+                                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        });
                             } else {
                                 editPassword.setError("Contraseña incorrecta");
                                 editPassword.requestFocus();

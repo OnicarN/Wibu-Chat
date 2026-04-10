@@ -78,19 +78,9 @@ public class SignUpActivity extends AppCompatActivity {
         String mail = email.getText().toString().trim();
         String passwd = password.getText().toString().trim();
 
-        if (name.isEmpty()) {
-            username.setError("Introduce un nombre de usuario");
-            return;
-        }
-        if (mail.isEmpty()) {
-            email.setError("Introduce un email");
-            return;
-        }
-        if (passwd.isEmpty()) {
-            password.setError("Introduce una contraseña");
-            return;
-        }
-
+        if (name.isEmpty()) { username.setError("Introduce un nombre de usuario"); return; }
+        if (mail.isEmpty()) { email.setError("Introduce un email"); return; }
+        if (passwd.isEmpty()) { password.setError("Introduce una contraseña"); return; }
 
         validarUsuarioExistente(name, new ValidacionesUsername() {
             @Override
@@ -108,13 +98,33 @@ public class SignUpActivity extends AppCompatActivity {
                                         .build();
                                 mAuth.getCurrentUser().updateProfile(profile);
 
-                                // 3) Guardar el perfil público en Realtime Database
-                                HelperClass helperClass = new HelperClass(uid, name, mail);
-                                databaseReference.child(uid).setValue(helperClass);
+                                // --- AQUÍ EMPIEZA LO NUEVO DEL TOKEN ---
 
-                                Toast.makeText(SignUpActivity.this, "Registro exitoso", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
-                                finish();
+                                // A. Pedimos el Token al dispositivo
+                                com.google.firebase.messaging.FirebaseMessaging.getInstance().getToken()
+                                        .addOnCompleteListener(tokenTask -> {
+                                            String tokenGenerado = "";
+                                            if (tokenTask.isSuccessful()) {
+                                                tokenGenerado = tokenTask.getResult();
+                                            }
+
+                                            // B. Creamos el objeto HelperClass incluyendo el token
+                                            // (Asegúrate de que tu HelperClass tenga el campo fcmtoken)
+                                            HelperClass helperClass = new HelperClass(uid, name, mail);
+                                            helperClass.setFcmToken(tokenGenerado);
+
+                                            // C. Guardamos todo el perfil en Realtime Database
+                                            databaseReference.child(uid).setValue(helperClass)
+                                                    .addOnCompleteListener(dbTask -> {
+                                                        Toast.makeText(SignUpActivity.this, "Registro exitoso", Toast.LENGTH_SHORT).show();
+                                                        // D. Ahora sí, nos vamos al Login o al Main
+                                                        startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
+                                                        finish();
+                                                    });
+                                        });
+
+                                // --- AQUÍ TERMINA LO NUEVO ---
+
                             } else {
                                 Toast.makeText(SignUpActivity.this, "Error: " + task.getException().getMessage(),
                                         Toast.LENGTH_LONG).show();
@@ -124,8 +134,7 @@ public class SignUpActivity extends AppCompatActivity {
 
             @Override
             public void onUsernameExists() {
-                Toast.makeText(SignUpActivity.this, "El nombre de usuario ya ha sido usado en otra cuenta " ,
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(SignUpActivity.this, "El nombre de usuario ya ha sido usado", Toast.LENGTH_LONG).show();
             }
         });
     }
