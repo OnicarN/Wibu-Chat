@@ -43,6 +43,7 @@ public class ContactoAdapter extends RecyclerView.Adapter<ContactoAdapter.Contac
             Intent intent = new Intent(v.getContext(),ContactoIndividual.class);
             intent.putExtra("username",contacto.getNombre());
             intent.putExtra("mail",contacto.getEmail());
+            intent.putExtra("uid", contacto.getUid());
             v.getContext().startActivity(intent);
         });
     }
