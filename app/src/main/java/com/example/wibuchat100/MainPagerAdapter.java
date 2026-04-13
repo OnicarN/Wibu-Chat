@@ -17,11 +17,12 @@ public class MainPagerAdapter extends FragmentStateAdapter {
         switch (position) {
             case 0: return new AmigosFragment();
             case 1: return new BuscarFragment();
-            case 2: return new PerfilFragment();
+            case 2: return new GruposFragment();  // ← ¿tienes esta línea?
+            case 3: return new PerfilFragment();
             default: return new AmigosFragment();
         }
     }
 
     @Override
-    public int getItemCount() { return 3; }
+    public int getItemCount() { return 4; }
 }

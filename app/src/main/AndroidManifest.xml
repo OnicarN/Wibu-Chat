@@ -42,9 +42,19 @@
             android:name=".MainActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ChatActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="false"/>
+        <activity
+            android:name=".ChatGrupalActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="false"/>
 
         <activity android:name=".SolicitudActivity" android:exported="false" />
         <activity android:name=".AmigosActivity"    android:exported="false" />
+
+        <activity android:name=".CrearGrupoActivity" android:exported="false"/>
 
         <service
             android:name=".MyFirebaseMessagingService"
