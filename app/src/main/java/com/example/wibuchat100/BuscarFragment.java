@@ -25,7 +25,7 @@ public class BuscarFragment extends Fragment {
 
     RecyclerView recycler;
     SearchView buscador;
-    ContactoAdapter adapter;
+    BuscarAdapter adapter;                          // ← cambiado
     List<Contacto> listaUsuarios = new ArrayList<>();
     DatabaseReference db;
 
@@ -44,11 +44,10 @@ public class BuscarFragment extends Fragment {
         recycler = view.findViewById(R.id.recyclerBuscar);
         buscador = view.findViewById(R.id.buscadorUsuarios);
 
-        adapter = new ContactoAdapter(listaUsuarios);
+        adapter = new BuscarAdapter(listaUsuarios); // ← cambiado
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         recycler.setAdapter(adapter);
 
-        // Carga todos los usuarios al escribir
         buscador.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String texto) {

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0D0D1A">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nuevo Grupo"
+            android:textColor="#FFFFFF"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="24dp"
+            android:textAlignment="center"/>
+
+        <EditText
+            android:id="@+id/inputNombreGrupo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nombre del grupo"
+
+            android:textColor="#FFFFFF"
+            android:background="@drawable/input_mensaje_bg"
+            android:padding="14dp"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Añadir amigos"
+            android:textColor="#AAAAAA"
+            android:textSize="14sp"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Aquí se añaden los CheckBox dinámicamente -->
+        <LinearLayout
+            android:id="@+id/contenedorAmigos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/input_mensaje_bg"
+            android:padding="12dp"
+            android:layout_marginBottom="24dp"/>
+
+        <Button
+            android:id="@+id/btnCrearGrupoFinal"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Crear Grupo"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/chat_header_gradient"/>
+
+    </LinearLayout>
+</ScrollView>
