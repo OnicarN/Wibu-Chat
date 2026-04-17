@@ -1,4 +1,4 @@
-package com.example.wibuchat100;
+package com.example.wibuchat100.contactos;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.wibuchat100.R;
+import com.example.wibuchat100.crearcuentas.Usuario;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,7 +42,7 @@ public class BuscarFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        db       = FirebaseDatabase.getInstance().getReference("users");
+        db = FirebaseDatabase.getInstance().getReference("users");
         recycler = view.findViewById(R.id.recyclerBuscar);
         buscador = view.findViewById(R.id.buscadorUsuarios);
 
@@ -64,7 +66,7 @@ public class BuscarFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 listaUsuarios.clear();
                 for (DataSnapshot hijo : snapshot.getChildren()) {
-                    HelperClass user = hijo.getValue(HelperClass.class);
+                    Usuario user = hijo.getValue(Usuario.class);
                     if (user != null && user.getUsername().toLowerCase()
                             .contains(texto.toLowerCase())) {
                         Contacto c = new Contacto();

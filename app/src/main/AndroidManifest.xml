@@ -20,16 +20,16 @@
         android:theme="@style/Theme.WibuChat100">
 
         <activity
-            android:name=".ContactoIndividual"
+            android:name=".contactos.ContactoIndividual"
             android:exported="false" />
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".crearcuentas.LoginActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".SignUpActivity"
+            android:name=".crearcuentas.SignUpActivity"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -43,21 +43,21 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ChatActivity"
+            android:name=".chats.ChatActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="false"/>
         <activity
-            android:name=".ChatGrupalActivity"
+            android:name=".chats.ChatGrupalActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="false"/>
 
-        <activity android:name=".SolicitudActivity" android:exported="false" />
+        <activity android:name=".solicitudes.SolicitudActivity" android:exported="false" />
         <activity android:name=".AmigosActivity"    android:exported="false" />
 
-        <activity android:name=".CrearGrupoActivity" android:exported="false"/>
+        <activity android:name=".chats.CrearGrupoActivity" android:exported="false"/>
 
         <service
-            android:name=".MyFirebaseMessagingService"
+            android:name=".solicitudes.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

@@ -1,4 +1,4 @@
-package com.example.wibuchat100;
+package com.example.wibuchat100.contactos;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.wibuchat100.MainActivity;
+import com.example.wibuchat100.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -43,8 +45,9 @@ public class ContactoIndividual extends AppCompatActivity {
         });
 
         botonSolicitud.setOnClickListener(v -> {
+            //En este punto se pasa el id de usuario del usuario que está registrado en ese momento
             String emisorUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            String receptorUid = getIntent().getStringExtra("uid");
+            String receptorUid = getIntent().getStringExtra("idUsuario");
 
             if (receptorUid != null) {
                 DatabaseReference ref = FirebaseDatabase.getInstance().getReference("solicitudes");
@@ -60,10 +63,6 @@ public class ContactoIndividual extends AppCompatActivity {
                     Toast.makeText(this, "¡Solicitud enviada!", Toast.LENGTH_SHORT).show();
                     botonSolicitud.setEnabled(false);
                     botonSolicitud.setText("Enviada");
-
-// ← Ya NO llamamos a enviarNotificacionPush() ni sendFCM()
-                    // La Cloud Function lo hace automáticamente y correctamente
-
                 });
             }
         });
@@ -81,5 +80,4 @@ public class ContactoIndividual extends AppCompatActivity {
         nombreUsuario.setText(intent.getStringExtra("username"));
         emailUsuario.setText(intent.getStringExtra("mail"));
     }
-    // ← Los métodos enviarNotificacionPush() y sendFCM() se eliminan por completo
 }

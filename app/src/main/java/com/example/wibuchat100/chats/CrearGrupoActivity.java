@@ -1,4 +1,4 @@
-package com.example.wibuchat100;
+package com.example.wibuchat100.chats;
 
 import android.os.Bundle;
 import android.widget.Button;
@@ -14,6 +14,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.wibuchat100.R;
+import com.example.wibuchat100.crearcuentas.Usuario;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -72,7 +74,7 @@ public class CrearGrupoActivity extends AppCompatActivity {
                     dbUsers.child(amigoUid).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot userSnap) {
-                            HelperClass user = userSnap.getValue(HelperClass.class);
+                            Usuario user = userSnap.getValue(Usuario.class);
                             if (user != null) {
                                 // Creamos un CheckBox dinámicamente por cada amigo
                                 CheckBox cb = new CheckBox(CrearGrupoActivity.this);

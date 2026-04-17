@@ -1,9 +1,14 @@
-package com.example.wibuchat100;
+package com.example.wibuchat100.secciones;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+
+import com.example.wibuchat100.perfiles.PerfilFragment;
+import com.example.wibuchat100.amigos.AmigosPestania;
+import com.example.wibuchat100.chats.GruposFragment;
+import com.example.wibuchat100.contactos.BuscarFragment;
 
 public class MainPagerAdapter extends FragmentStateAdapter {
 
@@ -15,11 +20,11 @@ public class MainPagerAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         switch (position) {
-            case 0: return new AmigosFragment();
+            case 0: return new AmigosPestania();
             case 1: return new BuscarFragment();
             case 2: return new GruposFragment();  // ← ¿tienes esta línea?
             case 3: return new PerfilFragment();
-            default: return new AmigosFragment();
+            default: return new AmigosPestania();
         }
     }
 

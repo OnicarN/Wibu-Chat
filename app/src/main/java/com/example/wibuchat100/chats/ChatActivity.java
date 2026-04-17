@@ -1,11 +1,11 @@
-package com.example.wibuchat100;
+package com.example.wibuchat100.chats;
 
 import android.os.Bundle;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -14,6 +14,8 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.wibuchat100.cifrador.CifradoHelper;
+import com.example.wibuchat100.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,77 +26,60 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatGrupalActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity {
 
     RecyclerView recyclerMensajes;
     EditText inputMensaje;
     ImageButton btnEnviar;
-    TextView txtNombreGrupo;
+    TextView txtNombreChat;
 
-    String miUid, miNombre, grupoId, grupoNombre;
-    DatabaseReference dbGrupo;
+    String miUid, otroUid, otroNombre, chatId;
+    DatabaseReference dbChat;
     List<Mensaje> listaMensajes = new ArrayList<>();
-    MensajeGrupalAdapter mensajeAdapter;
+    MensajeAdapter mensajeAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_chat_grupal);
+        setContentView(R.layout.activity_chat);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
-        miUid      = FirebaseAuth.getInstance().getUid();
-        grupoId    = getIntent().getStringExtra("grupoId");
-        grupoNombre = getIntent().getStringExtra("grupoNombre");
-
-        dbGrupo = FirebaseDatabase.getInstance()
-                .getReference("grupos").child(grupoId).child("messages");
-
-        txtNombreGrupo   = findViewById(R.id.txtNombreGrupo);
-        recyclerMensajes = findViewById(R.id.recyclerMensajesGrupal);
-        inputMensaje     = findViewById(R.id.inputMensajeGrupal);
-        btnEnviar        = findViewById(R.id.btnEnviarGrupal);
-
-        txtNombreGrupo.setText(grupoNombre);
-
-        mensajeAdapter = new MensajeGrupalAdapter(listaMensajes, miUid);
-        recyclerMensajes.setLayoutManager(new LinearLayoutManager(this));
-        recyclerMensajes.setAdapter(mensajeAdapter);
-
-        // Cargamos nuestro nombre para los mensajes
-        FirebaseDatabase.getInstance().getReference("users").child(miUid)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        HelperClass user = snapshot.getValue(HelperClass.class);
-                        if (user != null) miNombre = user.getUsername();
-                    }
-                    @Override public void onCancelled(@NonNull DatabaseError e) {}
-                });
+        cargarComponentes();
 
         escucharMensajes();
+
         btnEnviar.setOnClickListener(v -> enviarMensaje());
     }
 
     private void escucharMensajes() {
-        dbGrupo.addValueEventListener(new ValueEventListener() {
+        dbChat.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 listaMensajes.clear();
                 for (DataSnapshot hijo : snapshot.getChildren()) {
                     Mensaje m = hijo.getValue(Mensaje.class);
-                    if (m != null){
-                        m.setTexto(CifradoHelper.descifrar(m.getTexto(), grupoId));
+                    if (m != null) {
+                        m.setKey(hijo.getKey());
+
+                        // ← DESCIFRAR antes de mostrar en pantalla
+                        m.setTexto(CifradoHelper.descifrar(m.getTexto(), chatId));
+
                         listaMensajes.add(m);
+
+                        if (!m.getEmisorUid().equals(miUid) && !m.isLeido()) {
+                            dbChat.child(hijo.getKey()).child("leido").setValue(true);
+                        }
                     }
                 }
                 mensajeAdapter.notifyDataSetChanged();
-                if (!listaMensajes.isEmpty())
+                if (!listaMensajes.isEmpty()) {
                     recyclerMensajes.scrollToPosition(listaMensajes.size() - 1);
+                }
             }
             @Override public void onCancelled(@NonNull DatabaseError e) {}
         });
@@ -103,14 +88,39 @@ public class ChatGrupalActivity extends AppCompatActivity {
     private void enviarMensaje() {
         String texto = inputMensaje.getText().toString().trim();
         if (texto.isEmpty()) return;
-        String textoCifrado = CifradoHelper.cifrar(texto, grupoId);
+        String textoCifrado = CifradoHelper.cifrar(texto, chatId);
         Mensaje m = new Mensaje();
         m.setTexto(textoCifrado);
         m.setEmisorUid(miUid);
-        m.setEmisorNombre(miNombre != null ? miNombre : "Yo");
         m.setTimestamp(System.currentTimeMillis());
+        m.setLeido(false);
 
-        dbGrupo.push().setValue(m);
+        dbChat.push().setValue(m);
         inputMensaje.setText("");
+    }
+
+    public void cargarComponentes(){
+        miUid  = FirebaseAuth.getInstance().getUid();
+        otroUid  = getIntent().getStringExtra("idusuario");
+        otroNombre = getIntent().getStringExtra("username");
+
+        // ChatId único: ordenamos los UIDs para que siempre sea el mismo
+        chatId = miUid.compareTo(otroUid) < 0
+                ? miUid + "_" + otroUid
+                : otroUid + "_" + miUid;
+
+        dbChat = FirebaseDatabase.getInstance()
+                .getReference("chats").child(chatId).child("messages");
+
+        txtNombreChat = findViewById(R.id.txtNombreChat);
+        recyclerMensajes = findViewById(R.id.recyclerMensajes);
+        inputMensaje = findViewById(R.id.inputMensaje);
+        btnEnviar = findViewById(R.id.btnEnviar);
+
+        txtNombreChat.setText(otroNombre);
+
+        mensajeAdapter = new MensajeAdapter(listaMensajes, miUid);
+        recyclerMensajes.setLayoutManager(new LinearLayoutManager(this));
+        recyclerMensajes.setAdapter(mensajeAdapter);
     }
 }

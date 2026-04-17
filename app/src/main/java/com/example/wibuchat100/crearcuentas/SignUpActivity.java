@@ -1,4 +1,4 @@
-package com.example.wibuchat100;
+package com.example.wibuchat100.crearcuentas;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,8 +15,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.wibuchat100.R;
+import com.example.wibuchat100.ValidacionesUsername;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -54,7 +55,6 @@ public class SignUpActivity extends AppCompatActivity {
         btnSignUp = findViewById(R.id.signup_button);
         txtLogin = findViewById(R.id.signRedirectTet);
 
-        // Inicializo FirebaseAuth
         mAuth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference("users");
 
@@ -73,6 +73,11 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     *
+     * En Este métood lo que hago es registrar usuarios en el la base de datos
+     * y al mismo tiempo lo que hago es guardarlos en el authentication
+     */
     private void registrarUsuario() {
         String name = username.getText().toString().trim();
         String mail = email.getText().toString().trim();
@@ -85,45 +90,32 @@ public class SignUpActivity extends AppCompatActivity {
         validarUsuarioExistente(name, new ValidacionesUsername() {
             @Override
             public void onUsernameAvailable() {
-                // 1) Crear usuario en Firebase Authentication
+                //Creo la cuenta en autentication
                 mAuth.createUserWithEmailAndPassword(mail, passwd)
                         .addOnCompleteListener(task -> {
 
                             if (task.isSuccessful()) {
-                                String uid = mAuth.getCurrentUser().getUid();
+                                String id = mAuth.getCurrentUser().getUid();
 
-                                // 2) Guardar el displayName en Auth (opcional)
-                                UserProfileChangeRequest profile = new UserProfileChangeRequest.Builder()
-                                        .setDisplayName(name)
-                                        .build();
-                                mAuth.getCurrentUser().updateProfile(profile);
-
-                                // --- AQUÍ EMPIEZA LO NUEVO DEL TOKEN ---
-
-                                // A. Pedimos el Token al dispositivo
+                                // pido el token al dispositivo
                                 com.google.firebase.messaging.FirebaseMessaging.getInstance().getToken()
                                         .addOnCompleteListener(tokenTask -> {
-                                            String tokenGenerado = "";
+                                            String tokenObtenido = "";
                                             if (tokenTask.isSuccessful()) {
-                                                tokenGenerado = tokenTask.getResult();
+                                                tokenObtenido = tokenTask.getResult();
                                             }
 
-                                            // B. Creamos el objeto HelperClass incluyendo el token
-                                            // (Asegúrate de que tu HelperClass tenga el campo fcmtoken)
-                                            HelperClass helperClass = new HelperClass(uid, name, mail);
-                                            helperClass.setFcmToken(tokenGenerado);
+                                            Usuario usuario = new Usuario(id, name, mail);
 
-                                            // C. Guardamos todo el perfil en Realtime Database
-                                            databaseReference.child(uid).setValue(helperClass)
+                                            usuario.setFcmToken(tokenObtenido);
+
+                                            databaseReference.child(id).setValue(usuario)
                                                     .addOnCompleteListener(dbTask -> {
                                                         Toast.makeText(SignUpActivity.this, "Registro exitoso", Toast.LENGTH_SHORT).show();
-                                                        // D. Ahora sí, nos vamos al Login o al Main
                                                         startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
                                                         finish();
                                                     });
                                         });
-
-                                // --- AQUÍ TERMINA LO NUEVO ---
 
                             } else {
                                 Toast.makeText(SignUpActivity.this, "Error: " + task.getException().getMessage(),
@@ -134,11 +126,12 @@ public class SignUpActivity extends AppCompatActivity {
 
             @Override
             public void onUsernameExists() {
-                Toast.makeText(SignUpActivity.this, "El nombre de usuario ya ha sido usado", Toast.LENGTH_LONG).show();
+                Toast.makeText(SignUpActivity.this, "El nombre de usuario ya ha sido registrado", Toast.LENGTH_LONG).show();
             }
         });
     }
 
+    /**
     /**
      * Si ya existe un usuario con ese nombre
      * no vamos a dejar crear otro usuario con el

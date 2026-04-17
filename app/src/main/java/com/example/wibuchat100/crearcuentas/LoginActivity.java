@@ -1,4 +1,4 @@
-package com.example.wibuchat100;
+package com.example.wibuchat100.crearcuentas;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +14,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.wibuchat100.MainActivity;
+import com.example.wibuchat100.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -67,14 +69,17 @@ public class LoginActivity extends AppCompatActivity {
 
         if (username.isEmpty()) {
             editUsername.setError("Introduce tu nombre de usuario");
+            editUsername.requestFocus();
             return;
         }
         if (password.isEmpty()) {
             editPassword.setError("Introduce tu contraseña");
+            editPassword.requestFocus();
             return;
         }
 
         // Busco el email en Realtime Database a partir del username
+        //Para eso instancio un objeto tipo Query
         Query query = databaseReference.orderByChild("username").equalTo(username);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -84,43 +89,39 @@ public class LoginActivity extends AppCompatActivity {
                     editUsername.requestFocus();
                     return;
                 }
-
                 // Obtengo el email del primer resultado
+                //En este caso ya se sabe que solo hay uno pero el orderbychild me devuelve un array el snapshot
                 String email = null;
                 for (DataSnapshot child : snapshot.getChildren()) {
                     email = child.child("email").getValue(String.class);
                     break;
                 }
 
-                if (email == null) {
+                if (email.isEmpty()) {
                     Toast.makeText(LoginActivity.this, "Error al obtener datos del usuario",
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 // Ahora hago login con Firebase Authentication
-                final String emailFinal = email;
-                mAuth.signInWithEmailAndPassword(emailFinal, password)
+                final String emailAutentication = email;
+                mAuth.signInWithEmailAndPassword(emailAutentication, password)
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
-                                String uidActual = mAuth.getCurrentUser().getUid();
+                                String idUsario = mAuth.getCurrentUser().getUid();
                                 com.google.firebase.messaging.FirebaseMessaging.getInstance().getToken()
                                         .addOnCompleteListener(tokenTask -> {
                                             if (tokenTask.isSuccessful()) {
                                                 String token = tokenTask.getResult();
-
                                                 // 3. Lo guardamos en la carpeta del usuario en "users/UID/fcmtoken"
-                                                databaseReference.child(uidActual).child("fcmToken").setValue(token);
+                                                databaseReference.child(idUsario).child("fcmToken").setValue(token);
                                             }
-
-                                            // 4. IMPORTANTE: El cambio de pantalla va AQUÍ ADENTRO,
-                                            // para asegurar que intentamos guardar el token antes de irnos.
                                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                             startActivity(intent);
                                             finish();
                                         });
                             } else {
-                                editPassword.setError("Contraseña incorrecta");
+                                editPassword.setError("Usuario o contraseña incorrectos");
                                 editPassword.requestFocus();
                             }
                         });

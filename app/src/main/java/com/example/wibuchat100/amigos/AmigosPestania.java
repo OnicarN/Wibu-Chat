@@ -1,4 +1,4 @@
-package com.example.wibuchat100;
+package com.example.wibuchat100.amigos;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,6 +12,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.wibuchat100.R;
+import com.example.wibuchat100.contactos.Contacto;
+import com.example.wibuchat100.contactos.ContactoAdapter;
+import com.example.wibuchat100.crearcuentas.Usuario;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,7 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AmigosFragment extends Fragment {
+public class AmigosPestania extends Fragment {
 
     RecyclerView recycler;
     SearchView buscador;
@@ -84,7 +88,7 @@ public class AmigosFragment extends Fragment {
                     dbUsers.child(amigoUid).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot userSnap) {
-                            HelperClass user = userSnap.getValue(HelperClass.class);
+                            Usuario user = userSnap.getValue(Usuario.class);
                             if (user != null) {
                                 Contacto c = new Contacto();
                                 c.setNombre(user.getUsername());

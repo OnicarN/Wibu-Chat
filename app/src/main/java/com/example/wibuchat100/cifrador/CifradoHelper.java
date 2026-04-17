@@ -1,4 +1,4 @@
-package com.example.wibuchat100;
+package com.example.wibuchat100.cifrador;
 
 import android.util.Base64;
 

@@ -1,4 +1,4 @@
-package com.example.wibuchat100;
+package com.example.wibuchat100.chats;
 
 import java.util.List;
 

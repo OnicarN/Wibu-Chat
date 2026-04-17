@@ -1,4 +1,4 @@
-package com.example.wibuchat100;
+package com.example.wibuchat100.solicitudes;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -25,10 +25,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String title = null, body = null, emisorUid = null, solicitudKey = null;
 
         if (remoteMessage.getData().size() > 0) {
-            title       = remoteMessage.getData().get("title");
-            body        = remoteMessage.getData().get("body");
-            emisorUid   = remoteMessage.getData().get("emisorUid");      // ← nuevo
-            solicitudKey = remoteMessage.getData().get("solicitudKey");   // ← nuevo
+            title = remoteMessage.getData().get("title");
+            body = remoteMessage.getData().get("body");
+            emisorUid = remoteMessage.getData().get("emisorUid");
+            solicitudKey = remoteMessage.getData().get("solicitudKey");
         }
         if (remoteMessage.getNotification() != null) {
             if (title == null) title = remoteMessage.getNotification().getTitle();

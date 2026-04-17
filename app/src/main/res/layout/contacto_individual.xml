@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:gravity="center"
     android:background="@drawable/imagen_login"
-    tools:context=".ContactoIndividual">
+    tools:context=".contactos.ContactoIndividual">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"

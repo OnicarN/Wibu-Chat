@@ -1,4 +1,4 @@
-package com.example.wibuchat100;
+package com.example.wibuchat100.solicitudes;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +13,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.wibuchat100.amigos.AmigosPestania;
+import com.example.wibuchat100.MainActivity;
+import com.example.wibuchat100.R;
+import com.example.wibuchat100.crearcuentas.Usuario;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,8 +29,8 @@ public class SolicitudActivity extends AppCompatActivity {
     TextView txtTitulo, txtSubtitulo;
     Button btnAceptar, btnRechazar;
 
-    String emisorUid;      // UID del que envió la solicitud
-    String solicitudKey;   // Key del nodo en /solicitudes
+    String emisorUid;
+    String solicitudKey;
 
     DatabaseReference dbSolicitudes;
     DatabaseReference dbAmigos;
@@ -42,17 +46,7 @@ public class SolicitudActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Datos que llegan desde la notificación (o desde otro sitio)
-        emisorUid    = getIntent().getStringExtra("emisorUid");
-        solicitudKey = getIntent().getStringExtra("solicitudKey");
-
-        txtTitulo    = findViewById(R.id.solicitudTitulo);
-        txtSubtitulo = findViewById(R.id.solicitudSubtitulo);
-        btnAceptar   = findViewById(R.id.btnAceptar);
-        btnRechazar  = findViewById(R.id.btnRechazar);
-
-        dbSolicitudes = FirebaseDatabase.getInstance().getReference("solicitudes");
-        dbAmigos      = FirebaseDatabase.getInstance().getReference("amigos");
+        cargarComponentes();
 
         // Cargamos el nombre del emisor para mostrarlo
         if (emisorUid != null) {
@@ -61,7 +55,7 @@ public class SolicitudActivity extends AppCompatActivity {
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            HelperClass user = snapshot.getValue(HelperClass.class);
+                            Usuario user = snapshot.getValue(Usuario.class);
                             if (user != null) {
                                 txtSubtitulo.setText(user.getUsername() + " quiere ser tu amigo");
                             }
@@ -75,13 +69,27 @@ public class SolicitudActivity extends AppCompatActivity {
         btnRechazar.setOnClickListener(v -> rechazarSolicitud());
     }
 
+    public void cargarComponentes(){
+        // Datos que llegan desde la notificación (o desde otro sitio)
+        emisorUid = getIntent().getStringExtra("emisorUid");
+        solicitudKey = getIntent().getStringExtra("solicitudKey");
+
+        txtTitulo = findViewById(R.id.solicitudTitulo);
+        txtSubtitulo = findViewById(R.id.solicitudSubtitulo);
+        btnAceptar = findViewById(R.id.btnAceptar);
+        btnRechazar = findViewById(R.id.btnRechazar);
+
+        dbSolicitudes = FirebaseDatabase.getInstance().getReference("solicitudes");
+        dbAmigos = FirebaseDatabase.getInstance().getReference("amigos");
+    }
+
     private void aceptarSolicitud() {
-        String miUid = FirebaseAuth.getInstance().getUid();
-        if (miUid == null || emisorUid == null) return;
+        String idUsuarioActual = FirebaseAuth.getInstance().getUid();
+        if (idUsuarioActual == null || emisorUid == null) return;
 
         // Guardamos la amistad en ambas direcciones
-        dbAmigos.child(miUid).child(emisorUid).setValue(true);
-        dbAmigos.child(emisorUid).child(miUid).setValue(true);
+        dbAmigos.child(idUsuarioActual).child(emisorUid).setValue(true);
+        dbAmigos.child(emisorUid).child(idUsuarioActual).setValue(true);
 
         // Marcamos la solicitud como aceptada (o la borramos)
         if (solicitudKey != null) {
@@ -91,7 +99,7 @@ public class SolicitudActivity extends AppCompatActivity {
         Toast.makeText(this, "¡Ahora sois amigos!", Toast.LENGTH_SHORT).show();
 
         // Vamos a la pantalla de amigos
-        startActivity(new Intent(this, AmigosActivity.class));
+        startActivity(new Intent(this, AmigosPestania.class));
         finish();
     }
 
@@ -103,4 +111,6 @@ public class SolicitudActivity extends AppCompatActivity {
         startActivity(new Intent(this, MainActivity.class));
         finish();
     }
+
+
 }

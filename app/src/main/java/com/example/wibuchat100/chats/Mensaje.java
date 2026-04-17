@@ -1,10 +1,10 @@
-package com.example.wibuchat100;
+package com.example.wibuchat100.chats;
 
 public class Mensaje {
     private String key;
     private String texto;
     private String emisorUid;
-    private String emisorNombre; // para grupos
+    private String emisorNombre;
     private long timestamp;
     private boolean leido;
 

@@ -1,8 +1,6 @@
-package com.example.wibuchat100;
+package com.example.wibuchat100.chats;
 
 import android.os.Bundle;
-import android.view.View;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -16,6 +14,9 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.wibuchat100.cifrador.CifradoHelper;
+import com.example.wibuchat100.R;
+import com.example.wibuchat100.crearcuentas.Usuario;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,81 +27,77 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatGrupalActivity extends AppCompatActivity {
 
     RecyclerView recyclerMensajes;
     EditText inputMensaje;
     ImageButton btnEnviar;
-    TextView txtNombreChat;
+    TextView txtNombreGrupo;
 
-    String miUid, otroUid, otroNombre, chatId;
-    DatabaseReference dbChat;
+    String miUid, miNombre, grupoId, grupoNombre;
+    DatabaseReference dbGrupo;
     List<Mensaje> listaMensajes = new ArrayList<>();
-    MensajeAdapter mensajeAdapter;
+    MensajeGrupalAdapter mensajeAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_chat);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_chat_grupal);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
         miUid      = FirebaseAuth.getInstance().getUid();
-        otroUid    = getIntent().getStringExtra("uid");
-        otroNombre = getIntent().getStringExtra("username");
+        grupoId    = getIntent().getStringExtra("grupoId");
+        grupoNombre = getIntent().getStringExtra("grupoNombre");
 
-        // ChatId único: ordenamos los UIDs para que siempre sea el mismo
-        chatId = miUid.compareTo(otroUid) < 0
-                ? miUid + "_" + otroUid
-                : otroUid + "_" + miUid;
+        dbGrupo = FirebaseDatabase.getInstance()
+                .getReference("grupos").child(grupoId).child("messages");
 
-        dbChat = FirebaseDatabase.getInstance()
-                .getReference("chats").child(chatId).child("messages");
+        txtNombreGrupo   = findViewById(R.id.txtNombreGrupo);
+        recyclerMensajes = findViewById(R.id.recyclerMensajesGrupal);
+        inputMensaje     = findViewById(R.id.inputMensajeGrupal);
+        btnEnviar        = findViewById(R.id.btnEnviarGrupal);
 
-        txtNombreChat    = findViewById(R.id.txtNombreChat);
-        recyclerMensajes = findViewById(R.id.recyclerMensajes);
-        inputMensaje     = findViewById(R.id.inputMensaje);
-        btnEnviar        = findViewById(R.id.btnEnviar);
+        txtNombreGrupo.setText(grupoNombre);
 
-        txtNombreChat.setText(otroNombre);
-
-        mensajeAdapter = new MensajeAdapter(listaMensajes, miUid);
+        mensajeAdapter = new MensajeGrupalAdapter(listaMensajes, miUid);
         recyclerMensajes.setLayoutManager(new LinearLayoutManager(this));
         recyclerMensajes.setAdapter(mensajeAdapter);
 
-        escucharMensajes();
+        // Cargamos nuestro nombre para los mensajes
+        FirebaseDatabase.getInstance().getReference("users").child(miUid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Usuario user = snapshot.getValue(Usuario.class);
+                        if (user != null) miNombre = user.getUsername();
+                    }
+                    @Override public void onCancelled(@NonNull DatabaseError e) {}
+                });
 
+        escucharMensajes();
         btnEnviar.setOnClickListener(v -> enviarMensaje());
     }
 
     private void escucharMensajes() {
-        dbChat.addValueEventListener(new ValueEventListener() {
+        dbGrupo.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 listaMensajes.clear();
                 for (DataSnapshot hijo : snapshot.getChildren()) {
                     Mensaje m = hijo.getValue(Mensaje.class);
-                    if (m != null) {
-                        m.setKey(hijo.getKey());
-
-                        // ← DESCIFRAR antes de mostrar en pantalla
-                        m.setTexto(CifradoHelper.descifrar(m.getTexto(), chatId));
-
+                    if (m != null){
+                        m.setTexto(CifradoHelper.descifrar(m.getTexto(), grupoId));
                         listaMensajes.add(m);
-
-                        if (!m.getEmisorUid().equals(miUid) && !m.isLeido()) {
-                            dbChat.child(hijo.getKey()).child("leido").setValue(true);
-                        }
                     }
                 }
                 mensajeAdapter.notifyDataSetChanged();
-                if (!listaMensajes.isEmpty()) {
+                if (!listaMensajes.isEmpty())
                     recyclerMensajes.scrollToPosition(listaMensajes.size() - 1);
-                }
             }
             @Override public void onCancelled(@NonNull DatabaseError e) {}
         });
@@ -109,14 +106,14 @@ public class ChatActivity extends AppCompatActivity {
     private void enviarMensaje() {
         String texto = inputMensaje.getText().toString().trim();
         if (texto.isEmpty()) return;
-        String textoCifrado = CifradoHelper.cifrar(texto, chatId);
+        String textoCifrado = CifradoHelper.cifrar(texto, grupoId);
         Mensaje m = new Mensaje();
         m.setTexto(textoCifrado);
         m.setEmisorUid(miUid);
+        m.setEmisorNombre(miNombre != null ? miNombre : "Yo");
         m.setTimestamp(System.currentTimeMillis());
-        m.setLeido(false);
 
-        dbChat.push().setValue(m);
+        dbGrupo.push().setValue(m);
         inputMensaje.setText("");
     }
 }

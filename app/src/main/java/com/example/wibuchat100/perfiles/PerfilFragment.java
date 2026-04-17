@@ -1,4 +1,4 @@
-package com.example.wibuchat100;
+package com.example.wibuchat100.perfiles;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.wibuchat100.R;
+import com.example.wibuchat100.crearcuentas.LoginActivity;
+import com.example.wibuchat100.crearcuentas.Usuario;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,7 +47,7 @@ public class PerfilFragment extends Fragment {
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            HelperClass user = snapshot.getValue(HelperClass.class);
+                            Usuario user = snapshot.getValue(Usuario.class);
                             if (user != null) {
                                 txtNombre.setText(user.getUsername());
                                 txtEmail.setText(user.getEmail());

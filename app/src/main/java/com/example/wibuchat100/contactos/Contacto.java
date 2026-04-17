@@ -1,11 +1,9 @@
-package com.example.wibuchat100;
+package com.example.wibuchat100.contactos;
 
 public class Contacto {
     private String nombre;
     private String email;
-
     private String uid;
-
 
     public String getNombre() {
         return nombre;
