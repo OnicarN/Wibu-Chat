@@ -86,16 +86,18 @@ public class ChatActivity extends AppCompatActivity {
                     Mensaje m = hijo.getValue(Mensaje.class);
                     if (m != null) {
                         m.setKey(hijo.getKey());
+
+                        // ← DESCIFRAR antes de mostrar en pantalla
+                        m.setTexto(CifradoHelper.descifrar(m.getTexto(), chatId));
+
                         listaMensajes.add(m);
 
-                        // Marcar como leído si no soy el emisor
                         if (!m.getEmisorUid().equals(miUid) && !m.isLeido()) {
                             dbChat.child(hijo.getKey()).child("leido").setValue(true);
                         }
                     }
                 }
                 mensajeAdapter.notifyDataSetChanged();
-                // Scroll al último mensaje
                 if (!listaMensajes.isEmpty()) {
                     recyclerMensajes.scrollToPosition(listaMensajes.size() - 1);
                 }
@@ -107,9 +109,9 @@ public class ChatActivity extends AppCompatActivity {
     private void enviarMensaje() {
         String texto = inputMensaje.getText().toString().trim();
         if (texto.isEmpty()) return;
-
+        String textoCifrado = CifradoHelper.cifrar(texto, chatId);
         Mensaje m = new Mensaje();
-        m.setTexto(texto);
+        m.setTexto(textoCifrado);
         m.setEmisorUid(miUid);
         m.setTimestamp(System.currentTimeMillis());
         m.setLeido(false);

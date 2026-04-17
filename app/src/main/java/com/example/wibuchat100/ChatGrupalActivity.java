@@ -87,7 +87,10 @@ public class ChatGrupalActivity extends AppCompatActivity {
                 listaMensajes.clear();
                 for (DataSnapshot hijo : snapshot.getChildren()) {
                     Mensaje m = hijo.getValue(Mensaje.class);
-                    if (m != null) listaMensajes.add(m);
+                    if (m != null){
+                        m.setTexto(CifradoHelper.descifrar(m.getTexto(), grupoId));
+                        listaMensajes.add(m);
+                    }
                 }
                 mensajeAdapter.notifyDataSetChanged();
                 if (!listaMensajes.isEmpty())
@@ -100,9 +103,9 @@ public class ChatGrupalActivity extends AppCompatActivity {
     private void enviarMensaje() {
         String texto = inputMensaje.getText().toString().trim();
         if (texto.isEmpty()) return;
-
+        String textoCifrado = CifradoHelper.cifrar(texto, grupoId);
         Mensaje m = new Mensaje();
-        m.setTexto(texto);
+        m.setTexto(textoCifrado);
         m.setEmisorUid(miUid);
         m.setEmisorNombre(miNombre != null ? miNombre : "Yo");
         m.setTimestamp(System.currentTimeMillis());
