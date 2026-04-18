@@ -7,81 +7,91 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@drawable/imagen_login"
+    android:background="@drawable/ezzz"
     tools:context=".crearcuentas.SignUpActivity">
-    
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="30dp"
         app:cardCornerRadius="30dp"
-        app:cardElevation="30dp">
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="#1E1E3A">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_gravity="center_horizontal"
-            android:padding="24dp"
-            android:background="@drawable/border_pantalla">
+            android:padding="24dp">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Sign up"
+                android:textColor="#FFFFFF"
                 android:textSize="36sp"
                 android:textAlignment="center"
                 android:textStyle="bold"/>
+
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/SignUsername"
-                android:background="@drawable/border_pantalla"
-                android:layout_marginTop="40dp"
-                android:padding="8dp"
+                android:background="@drawable/input_mensaje_bg"
+                android:layout_marginTop="24dp"
+                android:padding="12dp"
                 android:hint="User name"
-                />
+                android:textColor="#FFFFFF"
+                android:textColorHint="#888888"/>
+
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/SignEmail"
-                android:background="@drawable/border_pantalla"
-                android:layout_marginTop="40dp"
-                android:padding="8dp"
+                android:background="@drawable/input_mensaje_bg"
+                android:layout_marginTop="16dp"
+                android:padding="12dp"
                 android:hint="Email"
-                />
+                android:textColor="#FFFFFF"
+                android:textColorHint="#888888"
+                android:inputType="textEmailAddress"/>
+
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/SignPassword"
-                android:background="@drawable/border_pantalla"
-                android:layout_marginTop="40dp"
-                android:padding="8dp"
+                android:background="@drawable/input_mensaje_bg"
+                android:layout_marginTop="16dp"
+                android:padding="12dp"
                 android:hint="Password"
-                />
+                android:textColor="#FFFFFF"
+                android:textColorHint="#888888"
+                android:inputType="textPassword"/>
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:text="Sign Up"
                 android:textSize="18sp"
+                android:textColor="#FFFFFF"
                 android:layout_marginTop="30dp"
-                android:id="@+id/signup_button"
-                />
+                android:background="@drawable/chat_header_gradient"
+                android:id="@+id/signup_button"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/signRedirectTet"
                 android:text="User Already Exist? Login"
+                android:textColor="#AAAAAA"
                 android:layout_gravity="center"
                 android:padding="8dp"
                 android:layout_marginTop="10dp"
-                android:textSize="18sp"
-                />
+                android:textSize="16sp"/>
+
         </LinearLayout>
 
-
     </androidx.cardview.widget.CardView>
-
-
 
 </LinearLayout>

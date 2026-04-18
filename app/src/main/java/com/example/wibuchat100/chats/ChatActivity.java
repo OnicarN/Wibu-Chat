@@ -56,6 +56,31 @@ public class ChatActivity extends AppCompatActivity {
         btnEnviar.setOnClickListener(v -> enviarMensaje());
     }
 
+
+    public void cargarComponentes(){
+        miUid  = FirebaseAuth.getInstance().getUid();
+        otroUid  = getIntent().getStringExtra("idusuario");
+        otroNombre = getIntent().getStringExtra("username");
+
+        // ChatId único: ordenamos los UIDs para que siempre sea el mismo
+        chatId = miUid.compareTo(otroUid) < 0
+                ? miUid + "_" + otroUid
+                : otroUid + "_" + miUid;
+
+        dbChat = FirebaseDatabase.getInstance()
+                .getReference("chats").child(chatId).child("messages");
+
+        txtNombreChat = findViewById(R.id.txtNombreChat);
+        recyclerMensajes = findViewById(R.id.recyclerMensajes);
+        inputMensaje = findViewById(R.id.inputMensaje);
+        btnEnviar = findViewById(R.id.btnEnviar);
+
+        txtNombreChat.setText(otroNombre);
+
+        mensajeAdapter = new MensajeAdapter(listaMensajes, miUid);
+        recyclerMensajes.setLayoutManager(new LinearLayoutManager(this));
+        recyclerMensajes.setAdapter(mensajeAdapter);
+    }
     private void escucharMensajes() {
         dbChat.addValueEventListener(new ValueEventListener() {
             @Override
@@ -99,28 +124,5 @@ public class ChatActivity extends AppCompatActivity {
         inputMensaje.setText("");
     }
 
-    public void cargarComponentes(){
-        miUid  = FirebaseAuth.getInstance().getUid();
-        otroUid  = getIntent().getStringExtra("idusuario");
-        otroNombre = getIntent().getStringExtra("username");
 
-        // ChatId único: ordenamos los UIDs para que siempre sea el mismo
-        chatId = miUid.compareTo(otroUid) < 0
-                ? miUid + "_" + otroUid
-                : otroUid + "_" + miUid;
-
-        dbChat = FirebaseDatabase.getInstance()
-                .getReference("chats").child(chatId).child("messages");
-
-        txtNombreChat = findViewById(R.id.txtNombreChat);
-        recyclerMensajes = findViewById(R.id.recyclerMensajes);
-        inputMensaje = findViewById(R.id.inputMensaje);
-        btnEnviar = findViewById(R.id.btnEnviar);
-
-        txtNombreChat.setText(otroNombre);
-
-        mensajeAdapter = new MensajeAdapter(listaMensajes, miUid);
-        recyclerMensajes.setLayoutManager(new LinearLayoutManager(this));
-        recyclerMensajes.setAdapter(mensajeAdapter);
-    }
 }
