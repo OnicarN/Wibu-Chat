@@ -52,11 +52,12 @@ public class MainActivity extends AppCompatActivity {
         // Une tabs con viewpager
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
             switch (position) {
-                case 0: tab.setText("Amigos");    break;
-                case 1: tab.setText("Buscar");    break;
-                case 2: tab.setText("Grupos");    break;
-                case 3: tab.setText("BotFriend"); break; // ← nuevo
-                case 4: tab.setText("Perfil");    break;
+                case 0: tab.setText("Amigos");      break;
+                case 1: tab.setText("Buscar");      break;
+                case 2: tab.setText("Grupos");      break;
+                case 3: tab.setText("Solicitudes"); break; // ← nuevo
+                case 4: tab.setText("BotFriend");   break;
+                case 5: tab.setText("Perfil");      break;
             }
         }).attach();
     }

@@ -4,13 +4,17 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -43,19 +47,24 @@
             android:name=".MainActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".chats.ChatActivity"
             android:windowSoftInputMode="adjustResize"
-            android:exported="false"/>
+            android:exported="false" />
+
         <activity
             android:name=".chats.ChatGrupalActivity"
             android:windowSoftInputMode="adjustResize"
-            android:exported="false"/>
+            android:exported="false" />
 
-        <activity android:name=".solicitudes.SolicitudActivity" android:exported="false" />
+        <activity
+            android:name=".solicitudes.SolicitudActivity"
+            android:exported="false" />
 
-
-        <activity android:name=".chats.CrearGrupoActivity" android:exported="false"/>
+        <activity
+            android:name=".chats.CrearGrupoActivity"
+            android:exported="false" />
 
         <service
             android:name=".solicitudes.MyFirebaseMessagingService"

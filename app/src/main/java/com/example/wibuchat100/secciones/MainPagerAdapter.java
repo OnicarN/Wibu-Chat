@@ -10,6 +10,7 @@ import com.example.wibuchat100.amigos.AmigosPestania;
 import com.example.wibuchat100.chats.GruposFragment;
 import com.example.wibuchat100.contactos.BuscarFragment;
 import com.example.wibuchat100.botfriend.BotFriendFragment;
+import com.example.wibuchat100.solicitudes.SolicitudesPestania;
 
 public class MainPagerAdapter extends FragmentStateAdapter {
 
@@ -24,8 +25,9 @@ public class MainPagerAdapter extends FragmentStateAdapter {
             case 0: return new AmigosPestania();
             case 1: return new BuscarFragment();
             case 2: return new GruposFragment();
-            case 3: return new BotFriendFragment(); // ← nuevo
-            case 4: return new PerfilFragment();
+            case 3: return new SolicitudesPestania(); // ← nuevo
+            case 4: return new BotFriendFragment();
+            case 5: return new PerfilFragment();
             default: return new AmigosPestania();
         }
     }

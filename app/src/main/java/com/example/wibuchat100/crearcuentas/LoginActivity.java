@@ -15,6 +15,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.wibuchat100.MainActivity;
+import com.example.wibuchat100.MyApplication;
 import com.example.wibuchat100.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -116,6 +117,13 @@ public class LoginActivity extends AppCompatActivity {
                                                 // 3. Lo guardamos en la carpeta del usuario en "users/UID/fcmtoken"
                                                 databaseReference.child(idUsario).child("fcmToken").setValue(token);
                                             }
+                                            String nombreUsuario = username;
+                                            MyApplication.iniciarZegoParaUsuario(
+                                                    getApplication(),
+                                                    idUsario,
+                                                    nombreUsuario
+                                            );
+
                                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                             startActivity(intent);
                                             finish();

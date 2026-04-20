@@ -52,6 +52,26 @@
                 android:textColor="#AAFFAA"
                 android:textSize="12sp"/>
         </LinearLayout>
+
+        <!-- Botón llamada de voz -->
+        <ImageButton
+            android:id="@+id/btnLlamadaVoz"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:src="@android:drawable/ic_menu_call"
+            android:background="@android:color/transparent"
+            android:tint="#FFFFFF"
+            android:layout_marginEnd="8dp"/>
+
+        <!-- Botón videollamada -->
+        <ImageButton
+            android:id="@+id/btnVideollamada"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:src="@android:drawable/ic_menu_camera"
+            android:background="@android:color/transparent"
+            android:tint="#FFFFFF"/>
+
     </LinearLayout>
 
     <!-- Lista de mensajes -->
