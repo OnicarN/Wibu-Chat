@@ -41,7 +41,7 @@ public class BotFriendFragment extends Fragment {
     JSONArray historial = new JSONArray();
 
     // ← PON AQUÍ TU API KEY DE GOOGLE AI STUDIO
-    private static final String API_KEY = "nO ME ROBES LA aPi KeY";
+    private static final String API_KEY = "NO ME ROBES LA API KEY";
     private static final String MODEL   = "gemini-2.5-flash-lite"; // gratis, 1000 req/día
 
     @Nullable
@@ -64,7 +64,7 @@ public class BotFriendFragment extends Fragment {
         recyclerMensajes.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerMensajes.setAdapter(adapter);
 
-        agregarMensajeBot("¡Hola! Soy BotFriend 🤖 Puedo ayudarte con lo que necesites. ¿De qué quieres hablar?");
+        agregarMensajeBot("¡Hola! Soy WibuFriend 🤖 Puedo ayudarte con lo que necesites. ¿De qué quieres hablar?");
 
         btnEnviar.setOnClickListener(v -> enviarMensaje());
     }
@@ -134,7 +134,7 @@ public class BotFriendFragment extends Fragment {
             // System instruction para dar personalidad al bot
             JSONObject systemInstruction = new JSONObject();
             JSONObject systemParte = new JSONObject();
-            systemParte.put("text", "Eres BotFriend, un asistente muy chulo que habla diciendo chachoo y aveces dice no te rayes que me rallo y útil dentro de la app WibuChat. Responde siempre en el idioma del usuario. Sé conciso, amigable y directo. Recuerda que no puedes generar imáganes ni nada sexual");
+            systemParte.put("text", "Eres Wibu Friend, un asistente muy chulo que habla cosas divertidas. Eres muy útil dentro de la app WibuChat. Responde siempre en el idioma del usuario. Sé conciso, amigable y directo. Recuerda que no puedes generar imáganes ni nada fuera de tono. Si te preguntan quien te ha creado di que el maravilloso creador Héctor Daniel Polanco Mena, el mejor porgramador del mundo");
             JSONArray systemPartes = new JSONArray();
             systemPartes.put(systemParte);
             systemInstruction.put("parts", systemPartes);
