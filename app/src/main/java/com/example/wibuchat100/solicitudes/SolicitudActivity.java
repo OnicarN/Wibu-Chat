@@ -48,7 +48,7 @@ public class SolicitudActivity extends AppCompatActivity {
 
         cargarComponentes();
 
-        // Cargamos el nombre del emisor para mostrarlo
+
         if (emisorUid != null) {
             FirebaseDatabase.getInstance().getReference("users")
                     .child(emisorUid)
@@ -87,18 +87,18 @@ public class SolicitudActivity extends AppCompatActivity {
         String idUsuarioActual = FirebaseAuth.getInstance().getUid();
         if (idUsuarioActual == null || emisorUid == null) return;
 
-        // Guardamos la amistad en ambas direcciones
+
         dbAmigos.child(idUsuarioActual).child(emisorUid).setValue(true);
         dbAmigos.child(emisorUid).child(idUsuarioActual).setValue(true);
 
-        // Marcamos la solicitud como aceptada (o la borramos)
+
         if (solicitudKey != null) {
             dbSolicitudes.child(solicitudKey).child("estado").setValue("aceptada");
         }
 
         Toast.makeText(this, "¡Ahora sois amigos!", Toast.LENGTH_SHORT).show();
 
-        // Vamos a la pantalla de amigos
+
         startActivity(new Intent(this, AmigosPestania.class));
         finish();
     }

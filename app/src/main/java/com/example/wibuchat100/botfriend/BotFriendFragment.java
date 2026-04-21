@@ -40,7 +40,7 @@ public class BotFriendFragment extends Fragment {
     // Historial para que el bot recuerde el contexto
     JSONArray historial = new JSONArray();
 
-    // ← PON AQUÍ TU API KEY DE GOOGLE AI STUDIO
+
     private static final String API_KEY = "NO ME ROBES LA API KEY";
     private static final String MODEL   = "gemini-2.5-flash-lite"; // gratis, 1000 req/día
 
@@ -81,7 +81,7 @@ public class BotFriendFragment extends Fragment {
         btnEnviar.setEnabled(false);
         progressBar.setVisibility(View.VISIBLE);
 
-        // Añadir al historial de conversación
+
         try {
             JSONObject parte = new JSONObject();
             parte.put("text", texto);
@@ -93,7 +93,7 @@ public class BotFriendFragment extends Fragment {
             historial.put(turnoUsuario);
         } catch (Exception e) { e.printStackTrace(); }
 
-        // Llamar a Gemini en hilo separado
+
         new Thread(() -> {
             String respuesta = llamarGeminiAPI();
             if (getActivity() != null) {
@@ -102,7 +102,7 @@ public class BotFriendFragment extends Fragment {
                     btnEnviar.setEnabled(true);
                     agregarMensajeBot(respuesta);
 
-                    // Añadir respuesta del bot al historial
+
                     try {
                         JSONObject parte = new JSONObject();
                         parte.put("text", respuesta);

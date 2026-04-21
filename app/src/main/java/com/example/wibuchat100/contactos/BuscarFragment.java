@@ -27,7 +27,7 @@ public class BuscarFragment extends Fragment {
 
     RecyclerView recycler;
     SearchView buscador;
-    BuscarAdapter adapter;                          // ← cambiado
+    BuscarAdapter adapter;
     List<Contacto> listaUsuarios = new ArrayList<>();
     DatabaseReference db;
 
@@ -46,7 +46,7 @@ public class BuscarFragment extends Fragment {
         recycler = view.findViewById(R.id.recyclerBuscar);
         buscador = view.findViewById(R.id.buscadorUsuarios);
 
-        adapter = new BuscarAdapter(listaUsuarios); // ← cambiado
+        adapter = new BuscarAdapter(listaUsuarios);
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         recycler.setAdapter(adapter);
 

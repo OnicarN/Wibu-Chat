@@ -37,8 +37,8 @@ public class PerfilFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        txtNombre       = view.findViewById(R.id.perfilNombre);
-        txtEmail        = view.findViewById(R.id.perfilEmailTxt);
+        txtNombre = view.findViewById(R.id.perfilNombre);
+        txtEmail = view.findViewById(R.id.perfilEmailTxt);
         btnCerrarSesion = view.findViewById(R.id.btnCerrarSesion);
 
         String uid = FirebaseAuth.getInstance().getUid();

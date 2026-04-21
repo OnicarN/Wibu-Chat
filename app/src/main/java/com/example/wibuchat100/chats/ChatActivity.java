@@ -68,8 +68,8 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void cargarComponentes() {
-        miUid      = FirebaseAuth.getInstance().getUid();
-        otroUid    = getIntent().getStringExtra("idusuario");
+        miUid = FirebaseAuth.getInstance().getUid();
+        otroUid = getIntent().getStringExtra("idusuario");
         otroNombre = getIntent().getStringExtra("username");
 
         chatId = miUid.compareTo(otroUid) < 0
@@ -79,10 +79,10 @@ public class ChatActivity extends AppCompatActivity {
         dbChat = FirebaseDatabase.getInstance()
                 .getReference("chats").child(chatId).child("messages");
 
-        txtNombreChat    = findViewById(R.id.txtNombreChat);
+        txtNombreChat = findViewById(R.id.txtNombreChat);
         recyclerMensajes = findViewById(R.id.recyclerMensajes);
-        inputMensaje     = findViewById(R.id.inputMensaje);
-        btnEnviar        = findViewById(R.id.btnEnviar);
+        inputMensaje = findViewById(R.id.inputMensaje);
+        btnEnviar = findViewById(R.id.btnEnviar);
 
         txtNombreChat.setText(otroNombre);
 

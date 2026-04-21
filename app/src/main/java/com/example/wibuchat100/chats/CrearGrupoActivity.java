@@ -37,7 +37,7 @@ public class CrearGrupoActivity extends AppCompatActivity {
     DatabaseReference dbAmigos, dbUsers, dbGrupos;
     String miUid;
 
-    // Mapa uid -> checkbox para saber quién está seleccionado
+
     Map<String, CheckBox> checkBoxMap = new HashMap<>();
 
     @Override
@@ -51,14 +51,14 @@ public class CrearGrupoActivity extends AppCompatActivity {
             return insets;
         });
 
-        miUid           = FirebaseAuth.getInstance().getUid();
-        dbAmigos        = FirebaseDatabase.getInstance().getReference("amigos");
-        dbUsers         = FirebaseDatabase.getInstance().getReference("users");
-        dbGrupos        = FirebaseDatabase.getInstance().getReference("grupos");
+        miUid  = FirebaseAuth.getInstance().getUid();
+        dbAmigos = FirebaseDatabase.getInstance().getReference("amigos");
+        dbUsers  = FirebaseDatabase.getInstance().getReference("users");
+        dbGrupos = FirebaseDatabase.getInstance().getReference("grupos");
 
         inputNombreGrupo  = findViewById(R.id.inputNombreGrupo);
         contenedorAmigos  = findViewById(R.id.contenedorAmigos);
-        btnCrear          = findViewById(R.id.btnCrearGrupoFinal);
+        btnCrear = findViewById(R.id.btnCrearGrupoFinal);
 
         cargarAmigosConCheckbox();
 

@@ -54,7 +54,7 @@ public class ContactoAdapter extends RecyclerView.Adapter<ContactoAdapter.Contac
         return listaContactos.size();
     }
 
-    // ViewHolder: guarda las referencias a los TextView de la tarjeta
+
     public static class ContactoViewHolder extends RecyclerView.ViewHolder {
         TextView nombre, email;
 

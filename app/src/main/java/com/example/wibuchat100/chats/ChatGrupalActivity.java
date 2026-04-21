@@ -50,16 +50,16 @@ public class ChatGrupalActivity extends AppCompatActivity {
             return insets;
         });
 
-        miUid      = FirebaseAuth.getInstance().getUid();
-        grupoId    = getIntent().getStringExtra("grupoId");
+        miUid = FirebaseAuth.getInstance().getUid();
+        grupoId = getIntent().getStringExtra("grupoId");
         grupoNombre = getIntent().getStringExtra("grupoNombre");
 
         dbGrupo = FirebaseDatabase.getInstance()
                 .getReference("grupos").child(grupoId).child("messages");
 
-        txtNombreGrupo   = findViewById(R.id.txtNombreGrupo);
+        txtNombreGrupo  = findViewById(R.id.txtNombreGrupo);
         recyclerMensajes = findViewById(R.id.recyclerMensajesGrupal);
-        inputMensaje     = findViewById(R.id.inputMensajeGrupal);
+        inputMensaje  = findViewById(R.id.inputMensajeGrupal);
         btnEnviar        = findViewById(R.id.btnEnviarGrupal);
 
         txtNombreGrupo.setText(grupoNombre);
