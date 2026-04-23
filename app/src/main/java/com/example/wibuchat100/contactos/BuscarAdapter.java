@@ -10,12 +10,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.wibuchat100.R;
+import com.google.firebase.database.DatabaseReference;
 
 import java.util.List;
 
 public class BuscarAdapter extends RecyclerView.Adapter<BuscarAdapter.BuscarViewHolder> {
 
     private List<Contacto> listaContactos;
+
+
 
     public BuscarAdapter(List<Contacto> listaContactos) {
         this.listaContactos = listaContactos;

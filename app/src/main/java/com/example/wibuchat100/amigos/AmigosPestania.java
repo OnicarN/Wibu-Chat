@@ -89,7 +89,7 @@ public class AmigosPestania extends Fragment {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot userSnap) {
                             Usuario user = userSnap.getValue(Usuario.class);
-                            if (user != null) {
+                            if (user != null && !user.getUid().equals(miUid)) {
                                 Contacto c = new Contacto();
                                 c.setNombre(user.getUsername());
                                 c.setEmail(user.getEmail());

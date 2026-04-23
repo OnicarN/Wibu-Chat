@@ -63,7 +63,8 @@ public class ChatGrupalActivity extends AppCompatActivity {
         btnEnviar        = findViewById(R.id.btnEnviarGrupal);
 
         txtNombreGrupo.setText(grupoNombre);
-
+        ImageButton btnVolver = findViewById(R.id.btnVolverGrupal);
+        btnVolver.setOnClickListener(v -> finish());
         mensajeAdapter = new MensajeGrupalAdapter(listaMensajes, miUid);
         recyclerMensajes.setLayoutManager(new LinearLayoutManager(this));
         recyclerMensajes.setAdapter(mensajeAdapter);

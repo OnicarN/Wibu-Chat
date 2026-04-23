@@ -102,9 +102,13 @@ public class ChatActivity extends AppCompatActivity {
                     public void onCancelled(@NonNull DatabaseError error) {}
                 });
 
+
+        //Parte en la que declaro los botones con las nuevas funciones del header
+        ImageButton btnVolver   = findViewById(R.id.btnVolver);
         ImageButton btnLlamadaVoz   = findViewById(R.id.btnLlamadaVoz);
         ImageButton btnVideollamada = findViewById(R.id.btnVideollamada);
 
+        btnVolver.setOnClickListener(v -> finish());
         btnLlamadaVoz.setOnClickListener(v -> iniciarLlamada(false));
         btnVideollamada.setOnClickListener(v -> iniciarLlamada(true));
     }

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.wibuchat100.R;
 import com.example.wibuchat100.crearcuentas.Usuario;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,7 +30,12 @@ public class BuscarFragment extends Fragment {
     SearchView buscador;
     BuscarAdapter adapter;
     List<Contacto> listaUsuarios = new ArrayList<>();
-    DatabaseReference db;
+    List<Usuario>listaAmigos = new ArrayList<>();
+
+    //En esta parte declaro tambien la parte en la que busco a mis maigos en la db.
+    DatabaseReference db, dbAmigos;
+
+    String miUid;
 
     @Nullable
     @Override
@@ -42,7 +48,9 @@ public class BuscarFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        miUid = FirebaseAuth.getInstance().getUid();
         db = FirebaseDatabase.getInstance().getReference("users");
+        dbAmigos = FirebaseDatabase.getInstance().getReference("amigos");
         recycler = view.findViewById(R.id.recyclerBuscar);
         buscador = view.findViewById(R.id.buscadorUsuarios);
 
@@ -50,6 +58,7 @@ public class BuscarFragment extends Fragment {
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         recycler.setAdapter(adapter);
 
+        buscarAmigos();
         buscador.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String texto) {
@@ -60,6 +69,38 @@ public class BuscarFragment extends Fragment {
         });
     }
 
+
+    private void buscarAmigos(){
+        dbAmigos.child(miUid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                listaAmigos.clear();
+
+                for(DataSnapshot hijo: snapshot.getChildren()){
+                    String amigoId = hijo.getKey();
+                    db.child(amigoId).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            Usuario amigo = snapshot.getValue(Usuario.class);
+                            if (amigo != null){
+                                listaAmigos.add(amigo);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
     private void buscarUsuarios(String texto) {
         db.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -67,8 +108,10 @@ public class BuscarFragment extends Fragment {
                 listaUsuarios.clear();
                 for (DataSnapshot hijo : snapshot.getChildren()) {
                     Usuario user = hijo.getValue(Usuario.class);
-                    if (user != null && user.getUsername().toLowerCase()
-                            .contains(texto.toLowerCase())) {
+                    if (user != null
+                            && user.getUsername().toLowerCase().contains(texto.toLowerCase())
+                            && !user.getUid().equals(miUid)       // ← excluirte a ti
+                            && !estaEnListaAmigos(user.getUid()) && !texto.isEmpty()) { // ← comparar por UID
                         Contacto c = new Contacto();
                         c.setNombre(user.getUsername());
                         c.setEmail(user.getEmail());
@@ -80,5 +123,12 @@ public class BuscarFragment extends Fragment {
             }
             @Override public void onCancelled(@NonNull DatabaseError e) {}
         });
+    }
+
+    private boolean estaEnListaAmigos(String uid) {
+        for (Usuario amigo : listaAmigos) {
+            if (amigo.getUid().equals(uid)) return true;
+        }
+        return false;
     }
 }
