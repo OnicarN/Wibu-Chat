@@ -35,6 +35,9 @@ public class SolicitudesPestania extends Fragment {
     DatabaseReference dbSolicitudes, dbAmigos, dbUsers;
     String miUid;
 
+    //ArrayList para que no salgan repetidas las solicitudes
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -83,23 +86,24 @@ public class SolicitudesPestania extends Fragment {
                     String estado = hijo.child("estado").getValue(String.class);
                     String de    = hijo.child("de").getValue(String.class);
 
-                    // Solo las pendientes dirigidas a mí
                     if (miUid.equals(para) && "pendiente".equals(estado)) {
                         String key = hijo.getKey();
 
-                        // Cargamos los datos del emisor
                         dbUsers.child(de).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot userSnap) {
                                 Usuario user = userSnap.getValue(Usuario.class);
                                 if (user != null) {
-                                    SolicitudItem item = new SolicitudItem();
-                                    item.setKey(key);
-                                    item.setEmisorUid(de);
-                                    item.setEmisorNombre(user.getUsername());
-                                    item.setEmisorEmail(user.getEmail());
-                                    listaSolicitudes.add(item);
-                                    adapter.notifyDataSetChanged();
+                                    // Comprobar si el UID ya existe en la lista
+                                    if (!yaExiste(de)) {
+                                        SolicitudItem item = new SolicitudItem();
+                                        item.setKey(key);
+                                        item.setEmisorUid(de);
+                                        item.setEmisorNombre(user.getUsername());
+                                        item.setEmisorEmail(user.getEmail());
+                                        listaSolicitudes.add(item);
+                                        adapter.notifyDataSetChanged();
+                                    }
                                     actualizarVacio();
                                 }
                             }
@@ -137,5 +141,14 @@ public class SolicitudesPestania extends Fragment {
             txtVacio.setVisibility(View.GONE);
             recycler.setVisibility(View.VISIBLE);
         }
+    }
+
+    private boolean yaExiste(String uid) {
+        for (SolicitudItem item : listaSolicitudes) {
+            if (item.getEmisorUid().equals(uid)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

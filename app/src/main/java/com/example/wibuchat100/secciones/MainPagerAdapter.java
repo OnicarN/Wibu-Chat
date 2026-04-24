@@ -33,5 +33,5 @@ public class MainPagerAdapter extends FragmentStateAdapter {
     }
 
     @Override
-    public int getItemCount() { return 4; }
+    public int getItemCount() { return 6; }
 }
